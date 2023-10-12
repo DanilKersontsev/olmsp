@@ -35,6 +35,7 @@
 </template>
 
 <script>
+import {BASE_URL} from "../../api-config";
 export default {
   data() {
     return {
@@ -59,7 +60,7 @@ export default {
       }
     },
     async sendLoginRequest(data) {
-      return fetch('/api/login', {
+      return fetch(`${BASE_URL}/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
