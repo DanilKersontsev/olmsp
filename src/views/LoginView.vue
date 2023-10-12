@@ -50,7 +50,7 @@ export default {
       try {
         const response = await this.sendLoginRequest(this.formData);
         if (!response.ok) {
-          this.handleLoginError(response);
+          await this.handleLoginError(response);
           return;
         }
         console.log('Login successful');
@@ -78,7 +78,3 @@ export default {
   }
 };
 </script>
-
-<style>
-/* Tailwind CSS stiilid saate siia lisada vastavalt oma vajadustele */
-</style>

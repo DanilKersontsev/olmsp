@@ -5,7 +5,6 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 dotenv.config();
 
-// MySQL andmebaasi ühendus
 const dbConnection = mysql.createConnection({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
@@ -13,8 +12,8 @@ const dbConnection = mysql.createConnection({
     database: process.env.DB_DATABASE,
 });
 
-const { registerUser } = require('./controllers/registerController'); // Impordi kontroller
-
+const { registerUser } = require('./controllers/registerController');
+const { loginUser } = require('./controllers/loginController');
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -23,9 +22,11 @@ app.use(cors());
 
 // Registreerimismarsruut
 app.post('/api/register', (req, res) => {
-    registerUser(req, res, dbConnection); // Edastage andmebaasiühendus kontrollerile
+    registerUser(req, res, dbConnection);
 });
-
+app.post('/api/login', (req, res) => {
+    loginUser(req, res, dbConnection);
+});
 app.listen(port, () => {
     console.log(`Server on käivitatud portil ${port}`);
 });
