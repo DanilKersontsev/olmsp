@@ -62,6 +62,8 @@
 </template>
 
 <script>
+import {BASE_URL} from "../../api-config";
+
 export default {
   data() {
     return {
@@ -82,7 +84,7 @@ export default {
   methods: {
     async submitForm() {
       try {
-        const response = await fetch('http://localhost:3000/api/register', {
+        const response = await fetch(`${BASE_URL}/register`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -102,6 +104,10 @@ export default {
         console.log('Registration successful');
         this.registrationSuccess = 'Registration successful. You can now log in.';
         this.registrationError = null;
+        // Käivitage $router.push() 5 sekundi pärast
+        setTimeout(() => {
+          this.$router.push('/');
+        }, 6000); // 5000 ms ehk 5 sekundit
       } catch (error) {
         // Handle errors if the request fails
         console.error(error);
