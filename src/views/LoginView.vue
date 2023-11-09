@@ -28,22 +28,24 @@
           >
         </div>
         <div id="login-error" class="text-red-500 text-sm mb-4">{{ loginError }}</div>
-        <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">Login</button>
+        <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded hover-bg-blue-600">Login</button>
       </form>
     </div>
   </div>
 </template>
 
 <script>
-import {BASE_URL} from "../../api-config";
+import VueCookies from 'vue-cookies';
+import { BASE_URL } from '../../api-config';
+
 export default {
   data() {
     return {
       formData: {
-        username: "",
-        password: "",
+        username: '',
+        password: '',
       },
-      loginError: "",
+      loginError: '',
     };
   },
   methods: {
@@ -54,28 +56,40 @@ export default {
           await this.handleLoginError(response);
           return;
         }
-        console.log('Login successful');
+
+        const responseData = await response.json();
+        if (responseData.token) {
+          VueCookies.set('userToken', responseData.token, '1d');
+        }
+
+        this.$router.push('/dashboard');
       } catch (error) {
         this.handleNetworkError(error);
       }
     },
-    async sendLoginRequest(data) {
+
+    async sendLoginRequest(formData) {
       return fetch(`${BASE_URL}/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(formData),
       });
     },
+
     async handleLoginError(response) {
-      const errorData = await response.json();
-      this.loginError = errorData.message;
-      console.error('Login failed:', this.loginError);
+      if (response.status === 401) {
+        this.loginError = 'Wrong username or password';
+      } else {
+        this.loginError = 'Login failed';
+      }
     },
+
     handleNetworkError(error) {
       console.error('Network error:', error);
+      this.loginError = 'Network error';
     },
-  }
+  },
 };
 </script>

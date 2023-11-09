@@ -1,40 +1,35 @@
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const secretKey = 'qwerty';
-// Sisselogimine
+const jwt = require('jsonwebtoken'); // Import jsonwebtoken
+
 exports.loginUser = (req, res, dbConnection) => {
     const { username, password } = req.body;
 
-    // Andmete kontrollimine
     if (!username || !password) {
-        return res.status(400).json({ error: 'Palun täitke kõik väljad' });
+        return res.status(400).json({ error: 'Please fill in all fields' });
     }
 
-    // Kontrollige, kas kasutaja on olemas
     const getUserQuery = 'SELECT * FROM users WHERE username = ?';
     dbConnection.query(getUserQuery, [username], (err, results) => {
         if (err) {
-            console.error('Andmete kontrollimine ebaõnnestus: ', err);
-            return res.status(500).json({ error: 'Andmete kontrollimine ebaõnnestus' });
+            console.error('Error in login query:', err);
+            return res.status(500).json({ error: 'Login failed' });
         }
 
         if (results.length === 0) {
-            return res.status(400).json({ error: 'Kasutaja ei eksisteeri' });
+            return res.status(400).json({ error: 'User not found' });
         }
 
         const user = results[0];
 
-        // Kontrolli parooli
         bcrypt.compare(password, user.password, (bcryptErr, passwordMatch) => {
             if (bcryptErr || !passwordMatch) {
-                return res.status(400).json({ error: 'Vale parool' });
+                console.error('Incorrect password');
+                return res.status(400).json({ error: 'Incorrect password' });
             }
 
-            // Loo JWT token
-            const token = jwt.sign({ userId: user.id }, secretKey, { expiresIn: '1h' });
-            const decodedToken = jwt.verify(token, secretKey);
+            const token = jwt.sign({ userId: user.user_id, username: user.username }, process.env.JWT_SECRET, { expiresIn: '1d' });
 
-            res.status(200).json({ token });
+            res.json({ token });
         });
     });
 };
