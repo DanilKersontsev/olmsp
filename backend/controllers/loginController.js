@@ -1,5 +1,5 @@
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken'); // Import jsonwebtoken
+const jwt = require('jsonwebtoken');
 
 exports.loginUser = (req, res, dbConnection) => {
     const { username, password } = req.body;

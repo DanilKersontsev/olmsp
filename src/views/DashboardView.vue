@@ -28,32 +28,26 @@ import VueCookies from 'vue-cookies';
 export default {
   data() {
     return {
-      username: '', // Initialize the username
+      username: '',
     };
   },
   created() {
-    // Check if the user is authenticated by checking for the JWT token
     const userToken = VueCookies.get('userToken');
     if (userToken) {
       try {
-        // Decode the JWT token to extract user information
         const decodedToken = JSON.parse(atob(userToken.split('.')[1]));
         this.username = decodedToken.username;
       } catch (error) {
-        // Handle decoding errors, e.g., invalid JWT format
         console.error('Error decoding JWT:', error);
         this.$router.push('/login');
       }
     } else {
-      // If the user is not authenticated, you can redirect them to the login page
       this.$router.push('/login');
     }
   },
   methods: {
     logout() {
-      // Clear the user token from cookies
       VueCookies.remove('userToken');
-      // Redirect the user to the login page
       this.$router.push('/login');
     },
   },
